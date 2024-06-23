@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
+    id("kotlin-kapt")
     kotlin("plugin.power-assert") version "2.0.0"
 }
 
@@ -77,9 +78,8 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.dagger.hilt)
-    implementation(libs.dagger.hilt.compiler)
+    kapt(libs.dagger.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.hilt.lifecycle.viewmodel)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
