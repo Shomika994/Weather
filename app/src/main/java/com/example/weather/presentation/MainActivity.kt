@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            val viewModel = hiltViewModel<MainViewModel>()
 
             WeatherTheme {
                 Surface(
@@ -62,7 +61,6 @@ class MainActivity : ComponentActivity() {
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         startActivity(intent)
                     } else {
-                        print("Hello $viewModel")
                     }
                 }
             }

@@ -18,7 +18,6 @@ kmongo = "5.1.0"
 artifactid = "2.0.0"
 hilt = "2.49"
 hiltNavigationCompose = "1.2.0"
-hiltLifecycleViewmodel = "1.0.0-alpha03"
 
 
 [libraries]
@@ -47,12 +46,11 @@ artifactid = { group = "groupId", name = "artifactId", version.ref = "artifactid
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
-androidx-hilt-lifecycle-viewmodel = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel", version.ref = "hiltLifecycleViewmodel" }
-
 
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
 

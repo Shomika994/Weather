@@ -60,6 +60,10 @@ android {
     powerAssert {
         functions = listOf("kotlin.assert", "kotlin.test.assertTrue")
     }
+
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
