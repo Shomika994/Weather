@@ -23,7 +23,7 @@ lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestLocationPermission(
-    onPermissionGranted: () -> Unit,
+    onPermissionGranted: @Composable () -> Unit,
     onPermissionDenied: () -> Unit,
 ) {
     val permissionState = rememberMultiplePermissionsState(
@@ -46,10 +46,10 @@ fun RequestLocationPermission(
                 permissionState.launchMultiplePermissionRequest()
             }
 
-            if (permissionState.allPermissionsGranted) {
-                onPermissionGranted()
-            }
         }
+    }
+    if (permissionState.allPermissionsGranted) {
+        onPermissionGranted()
     }
 }
 

@@ -9,34 +9,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
+import com.example.weather.network.Network
 import com.example.weather.ui.theme.WeatherTheme
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private val viewModel: MainViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,11 +40,13 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-
             WeatherTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
+
+                    val someFlow by viewModel.weatherData.collectAsState()
+
                     if (!isLocationEnabled(this)) {
                         Toast.makeText(
                             this,
@@ -61,48 +57,12 @@ class MainActivity : ComponentActivity() {
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         startActivity(intent)
                     } else {
+                        WeatherApp(this, someFlow)
+                        }
                     }
                 }
             }
         }
-    }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun CircularDialog() {
-        BasicAlertDialog(
-            onDismissRequest = { },
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.size(width = 350.dp, height = 350.dp)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Top,
-                    modifier = Modifier.padding(16.dp)
-                )
-                {
-                    Text(
-                        text = "Please wait...",
-                        color = Color.Black,
-                        fontSize = 20.sp
-                    )
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .align(Alignment.CenterHorizontally),
-                        color = Color.Blue
-                    )
-                }
-            }
-        }
-    }
-
-
-    @Preview
-    @Composable
-    fun SimpleComposablePreview() {
-        CircularDialog()
-    }
 }
+
