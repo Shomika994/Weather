@@ -1,11 +1,11 @@
-package com.example.weather.network
+package com.example.weather.data
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 
-object Network {
+object NetworkAccess {
 
     fun isOnline(context: Context): Boolean {
 

@@ -1,14 +1,11 @@
 package com.example.weather.presentation
 
-import android.content.SharedPreferences
-import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,9 +17,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,19 +25,16 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weather.R
-import com.example.weather.models.WeatherResponse
+import com.example.weather.domain.util.getUnit
+import com.example.weather.domain.util.getUnixTime
+import com.example.weather.domain.util.getWeatherIcon
 
 
 @Composable
-fun WeatherScreen(weatherResponse: WeatherResponse?) {
-
-    val preferences: SharedPreferences
+fun WeatherScreen(state: WeatherState) {
 
     Column(
         modifier = Modifier
@@ -51,94 +42,98 @@ fun WeatherScreen(weatherResponse: WeatherResponse?) {
             .padding(dimensionResource(id = R.dimen.main_screen_content_padding))
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            WeatherCardsFirstRow(weatherResponse)
+            WeatherCardsFirstRow(state)
         }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.card_view_marginTop)))
         Row {
-            WeatherCardsSecondRow()
+            WeatherCardsSecondRow(state)
         }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.card_view_marginTop)))
-        LocationCard()
+        LocationCard(state)
     }
-    }
+}
 
 
 @Composable
-fun WeatherCardsFirstRow(weatherResponse: WeatherResponse?) {
+fun WeatherCardsFirstRow(state: WeatherState) {
 
-    Row {
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
-            shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
-        ) {
-            Row(
+    state.weatherResponse?.let { data ->
+        Row {
+            Card(
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.card_view_content_padding)),
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1f)
+                    .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
             ) {
-                Image(
-                    modifier = Modifier.size(size = 40.dp),
-                    contentDescription = "",
-                    painter = painterResource(id = R.drawable.snowflakebk)
-                )
-                Column {
-                    Text(
-                        text = weatherResponse?.main?.tempMax.toString(),
-                        color = colorResource(id = R.color.primary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                Row(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_view_content_padding)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        modifier = Modifier.size(size = 40.dp),
+                        contentDescription = "",
+                        painter = painterResource(
+                            id = getWeatherIcon(
+                                data.weather.firstOrNull()?.icon ?: ""
+                            )
+                        )
                     )
-                    Text(
-                        text = "condition",
-                        color = colorResource(id = R.color.secondary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    )
+                    Column {
+                        Text(
+                            text = data.weather.firstOrNull()?.main ?: "",
+                            color = colorResource(id = R.color.primary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
+                            fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = data.weather.firstOrNull()?.description ?: "",
+                            color = colorResource(id = R.color.secondary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        )
+                    }
                 }
             }
-        }
 
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
-            shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
-        ) {
-            Row(
+            Card(
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.card_view_content_padding)),
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1f)
+                    .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
             ) {
-                Image(
-                    modifier = Modifier.size(size = 40.dp),
-                    contentDescription = "",
-                    painter = painterResource(id = R.drawable.rain)
-                )
-                Column {
-                    Text(
-                        text = "Degree",
-                        color = colorResource(id = R.color.primary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                Row(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_view_content_padding)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        modifier = Modifier.size(size = 40.dp),
+                        contentDescription = "",
+                        painter = painterResource(id = R.drawable.humidity)
                     )
-                    Text(
-                        text = "percent",
-                        color = colorResource(id = R.color.secondary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
+                    Column {
+                        Text(
+                            text = data.main.temp.toString() + getUnit(),
+                            color = colorResource(id = R.color.primary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
+                            fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = data.main.humidity.toString() + " percent",
+                            color = colorResource(id = R.color.secondary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
                 }
             }
         }
@@ -146,183 +141,189 @@ fun WeatherCardsFirstRow(weatherResponse: WeatherResponse?) {
 }
 
 @Composable
-fun WeatherCardsSecondRow() {
+fun WeatherCardsSecondRow(state: WeatherState) {
 
-    Row {
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
-            shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
-        ) {
-            Row(
+    state.weatherResponse?.let { data ->
+
+        Row {
+            Card(
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.card_view_content_padding)),
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1f)
+                    .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
             ) {
-                Image(
-                    modifier = Modifier.size(size = 40.dp),
-                    contentDescription = "",
-                    painter = painterResource(id = R.drawable.wind)
-                )
-                Column {
-                    Text(
-                        text = "Maximum",
-                        color = colorResource(id = R.color.primary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                Row(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_view_content_padding)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        modifier = Modifier.size(size = 40.dp),
+                        contentDescription = "",
+                        painter = painterResource(id = R.drawable.temperature)
                     )
-                    Text(
-                        text = "minimum",
-                        color = colorResource(id = R.color.secondary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    Column {
+                        Text(
+                            text = data.main.tempMax.toString() + " max",
+                            color = colorResource(id = R.color.primary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
+                            fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = data.main.tempMin.toString() + " min",
+                            color = colorResource(id = R.color.secondary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            Card(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
+            ) {
+                Row(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_view_content_padding)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        modifier = Modifier.size(size = 40.dp),
+                        contentDescription = "",
+                        painter = painterResource(id = R.drawable.wind)
                     )
+                    Column {
+                        Text(
+                            text = data.wind.speed.toString(),
+                            color = colorResource(id = R.color.primary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
+                            fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = "miles/hour",
+                            color = colorResource(id = R.color.secondary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
                 }
             }
         }
 
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
-            shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.card_view_content_padding)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    modifier = Modifier.size(size = 40.dp),
-                    contentDescription = "",
-                    painter = painterResource(id = R.drawable.sunny)
-                )
-                Column {
-                    Text(
-                        text = "Wind",
-                        color = colorResource(id = R.color.primary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                    Text(
-                        text = "miles/hour",
-                        color = colorResource(id = R.color.secondary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                }
-            }
-        }
     }
 }
 
 
 @Composable
-fun LocationCard() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
-    ) {
-        Column(
+fun LocationCard(state: WeatherState) {
+
+    state.weatherResponse?.let { data ->
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.card_view_content_padding))
+                .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
+            shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.location),
-                    contentDescription = stringResource(id = R.string.image_contentDescription),
-                    modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.identification_image_size))
-                        .padding(end = dimensionResource(id = R.dimen.identification_image_marginEnd)),
-                    contentScale = ContentScale.Fit
-                )
-                Column {
-                    Text(
-                        text = "Name",
-                        color = colorResource(id = R.color.primary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                    Text(
-                        text = "Country",
-                        color = colorResource(id = R.color.secondary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                }
-            }
-            HorizontalDivider(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.divider_margin)),
-                thickness = dimensionResource(id = R.dimen.divider_height),
-                color = colorResource(id = R.color.divider_background)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                    .padding(dimensionResource(id = R.dimen.card_view_content_padding))
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(end = dimensionResource(id = R.dimen.sunrise_marginTop))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.sunrise),
+                        painter = painterResource(id = R.drawable.location),
                         contentDescription = stringResource(id = R.string.image_contentDescription),
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.identification_image_size)),
+                        modifier = Modifier
+                            .size(dimensionResource(id = R.dimen.identification_image_size))
+                            .padding(end = dimensionResource(id = R.dimen.identification_image_marginEnd)),
                         contentScale = ContentScale.Fit
                     )
-                    Text(
-                        text = "Sunrise",
-                        color = colorResource(id = R.color.secondary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp
-                    )
+                    Column {
+                        Text(
+                            text = data.name,
+                            color = colorResource(id = R.color.primary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
+                            fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = data.sys.country,
+                            color = colorResource(id = R.color.secondary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
                 }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.sunset_marginStart))
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.divider_margin)),
+                    thickness = dimensionResource(id = R.dimen.divider_height),
+                    color = colorResource(id = R.color.divider_background)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.sunset),
-                        contentDescription = stringResource(id = R.string.image_contentDescription),
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.identification_image_size)),
-                        contentScale = ContentScale.Fit
-                    )
-                    Text(
-                        text = "Sunset",
-                        color = colorResource(id = R.color.secondary_text_color),
-                        fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(end = dimensionResource(id = R.dimen.sunrise_marginTop))
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.sunrise),
+                            contentDescription = stringResource(id = R.string.image_contentDescription),
+                            modifier = Modifier.size(dimensionResource(id = R.dimen.identification_image_size)),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(
+                            text = getUnixTime(data.sys.sunrise),
+                            color = colorResource(id = R.color.secondary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp
+                        )
+                    }
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.sunset_marginStart))
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.sunset),
+                            contentDescription = stringResource(id = R.string.image_contentDescription),
+                            modifier = Modifier.size(dimensionResource(id = R.dimen.identification_image_size)),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(
+                            text = getUnixTime(data.sys.sunset),
+                            color = colorResource(id = R.color.secondary_text_color),
+                            fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun WeatherTheme() {
 
-}
+
+
+
+
+
+
