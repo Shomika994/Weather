@@ -35,7 +35,7 @@ import com.example.weather.domain.util.getWeatherIcon
 
 @Composable
 fun WeatherScreen(state: WeatherState) {
-
+    // Milos
     Column(
         modifier = Modifier
             .background(colorResource(id = R.color.main_screen_content_background_color))
