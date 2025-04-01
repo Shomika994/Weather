@@ -1,6 +1,6 @@
 package com.example.weather.domain.util
 
-import com.example.model.R
+import com.example.weather.R
 
 fun getWeatherIcon(icon: String): Int {
     return when (icon) {

@@ -5,9 +5,9 @@ import com.example.weather.domain.model.WeatherData
 
 fun WeatherResponse.toDomainWeather(): WeatherData {
     return WeatherData(
-        icon = weather.firstOrNull()?.icon ?: "",
-        main = weather.firstOrNull()?.main ?: "",
-        description = weather.firstOrNull()?.description ?: "",
+        icon = weather.firstOrNull()?.icon,
+        main = weather.firstOrNull()?.main,
+        description = weather.firstOrNull()?.description,
         temperature = main.temp,
         humidity = main.humidity,
         tempMin = main.tempMin,

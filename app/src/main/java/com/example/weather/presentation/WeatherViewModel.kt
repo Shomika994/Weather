@@ -1,5 +1,6 @@
 package com.example.weather.presentation
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,49 +22,47 @@ class WeatherViewModel @Inject constructor(
 ) : ViewModel() {
 
     var state by mutableStateOf(WeatherState())
+        private set
 
     init {
         loadSavedResponse()
     }
 
     fun loadData() {
-        viewModelScope.launch {
-            state = state.copy(
-                isLoading = true, error = null
-            )
-
-            locationTracker.getCurrentLocation()?.let { it ->
-                when (val result = weatherRepository.fetchWeather(it.latitude, it.longitude)) {
-                    
-                    is Resource.Success -> {
-                        val weatherData = result.data
-                        state = state.copy(
-                            weatherData = weatherData,
-                            isLoading = false,
-                            error = null
-                        )
-                        weatherData?.let {
-                            dataStore.saveData(it)
-                        }
-                    }
-
-                    is Resource.Error -> {
-                        state = state.copy(
-                            weatherData = null,
-                            isLoading = false,
-                            error = result.message
-                        )
-                    }
-
-                }
-            } ?: run {
+            viewModelScope.launch {
                 state = state.copy(
-                    weatherData = null,
-                    isLoading = false,
-                    error = "Couldn't retrieve location." + " Make sure to enable GPS and grant permissions."
+                    isLoading = true, error = null
                 )
+
+                locationTracker.getCurrentLocation()?.let { it ->
+                    when (val result = weatherRepository.fetchWeather(it.latitude, it.longitude)) {
+
+                        is Resource.Success -> {
+                            val weatherData = result.data
+                            state = state.copy(
+                                weatherData = weatherData, isLoading = false, error = null
+                            )
+                            weatherData?.let {
+                                dataStore.saveData(it)
+                            }
+
+                        }
+
+                        is Resource.Error -> {
+                            state = state.copy(
+                                weatherData = null, isLoading = false, error = result.message
+                            )
+                        }
+
+                    }
+                } ?: kotlin.run {
+                    state = state.copy(
+                        weatherData = null,
+                        isLoading = false,
+                        error = "Couldn't retrieve location." + " Make sure to enable GPS and grant permissions."
+                    )
+                }
             }
-        }
     }
 
     private fun loadSavedResponse() {
