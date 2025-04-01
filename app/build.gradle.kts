@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.model"
+    namespace = "com.example.weather"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.model"
+        applicationId = "com.example.weather"
         minSdk = 27
         targetSdk = 34
         versionCode = 1
@@ -74,7 +74,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.play.services.location)
     implementation(libs.retrofit)

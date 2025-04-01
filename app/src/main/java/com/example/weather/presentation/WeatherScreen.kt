@@ -27,7 +27,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.model.R
+import com.example.weather.R
+import com.example.weather.domain.util.getUnit
 import com.example.weather.domain.util.getUnixTime
 import com.example.weather.domain.util.getWeatherIcon
 
@@ -75,13 +76,13 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                         contentDescription = "",
                         painter = painterResource(
                             id = getWeatherIcon(
-                                data.icon
+                                data.icon.toString()
                             )
                         )
                     )
                     Column {
                         Text(
-                            text = data.main,
+                            text = data.main.toString(),
                             color = colorResource(id = R.color.primary_text_color),
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
@@ -89,7 +90,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                         Text(
-                            text = data.description,
+                            text = data.description.toString(),
                             color = colorResource(id = R.color.secondary_text_color),
                             fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
                             modifier = Modifier.fillMaxWidth(),
@@ -118,7 +119,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                     )
                     Column {
                         Text(
-                            text = data.temperature.toString(),
+                            text = data.temperature.toString() + getUnit(),
                             color = colorResource(id = R.color.primary_text_color),
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
