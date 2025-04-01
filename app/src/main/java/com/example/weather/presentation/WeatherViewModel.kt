@@ -20,7 +20,6 @@ class WeatherViewModel @Inject constructor(
     private val dataStore: DataStore
 ) : ViewModel() {
 
-
     var state by mutableStateOf(WeatherState())
 
     init {
@@ -37,20 +36,20 @@ class WeatherViewModel @Inject constructor(
                 when (val result = weatherRepository.fetchWeather(it.latitude, it.longitude)) {
                     
                     is Resource.Success -> {
-                        val weatherResponse = result.data
+                        val weatherData = result.data
                         state = state.copy(
-                            weatherResponse = weatherResponse,
+                            weatherData = weatherData,
                             isLoading = false,
                             error = null
                         )
-                        weatherResponse?.let {
+                        weatherData?.let {
                             dataStore.saveData(it)
                         }
                     }
 
                     is Resource.Error -> {
                         state = state.copy(
-                            weatherResponse = null,
+                            weatherData = null,
                             isLoading = false,
                             error = result.message
                         )
@@ -59,7 +58,7 @@ class WeatherViewModel @Inject constructor(
                 }
             } ?: run {
                 state = state.copy(
-                    weatherResponse = null,
+                    weatherData = null,
                     isLoading = false,
                     error = "Couldn't retrieve location." + " Make sure to enable GPS and grant permissions."
                 )
@@ -69,9 +68,9 @@ class WeatherViewModel @Inject constructor(
 
     private fun loadSavedResponse() {
         viewModelScope.launch {
-            dataStore.weatherResponseFlow.collect { savedWeather ->
+            dataStore.weatherDataFlow.collect { savedWeather ->
                 savedWeather.let {
-                    state = state.copy(weatherResponse = it)
+                    state = state.copy(weatherData = it)
                 }
             }
         }

@@ -1,9 +1,10 @@
 package com.example.weather.presentation
 
-import com.example.weather.domain.WeatherResponse
+import com.example.weather.domain.model.WeatherData
+
 
 data class WeatherState(
-    val weatherResponse: WeatherResponse? = null,
+    val weatherData: WeatherData? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )

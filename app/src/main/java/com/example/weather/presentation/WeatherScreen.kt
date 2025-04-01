@@ -27,8 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weather.R
-import com.example.weather.domain.util.getUnit
+import com.example.model.R
 import com.example.weather.domain.util.getUnixTime
 import com.example.weather.domain.util.getWeatherIcon
 
@@ -57,7 +56,7 @@ fun WeatherScreen(state: WeatherState) {
 @Composable
 fun WeatherCardsFirstRow(state: WeatherState) {
 
-    state.weatherResponse?.let { data ->
+    state.weatherData?.let { data ->
         Row {
             Card(
                 modifier = Modifier
@@ -76,13 +75,13 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                         contentDescription = "",
                         painter = painterResource(
                             id = getWeatherIcon(
-                                data.weather.firstOrNull()?.icon ?: ""
+                                data.icon
                             )
                         )
                     )
                     Column {
                         Text(
-                            text = data.weather.firstOrNull()?.main ?: "",
+                            text = data.main,
                             color = colorResource(id = R.color.primary_text_color),
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
@@ -90,7 +89,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                         Text(
-                            text = data.weather.firstOrNull()?.description ?: "",
+                            text = data.description,
                             color = colorResource(id = R.color.secondary_text_color),
                             fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
                             modifier = Modifier.fillMaxWidth(),
@@ -119,7 +118,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                     )
                     Column {
                         Text(
-                            text = data.main.temp.toString() + getUnit(),
+                            text = data.temperature.toString(),
                             color = colorResource(id = R.color.primary_text_color),
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
@@ -127,7 +126,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                         Text(
-                            text = data.main.humidity.toString() + " percent",
+                            text = data.humidity.toString() + "%",
                             color = colorResource(id = R.color.secondary_text_color),
                             fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
                             modifier = Modifier.fillMaxWidth(),
@@ -143,7 +142,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
 @Composable
 fun WeatherCardsSecondRow(state: WeatherState) {
 
-    state.weatherResponse?.let { data ->
+    state.weatherData?.let { data ->
 
         Row {
             Card(
@@ -165,7 +164,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
                     )
                     Column {
                         Text(
-                            text = data.main.tempMax.toString() + " max",
+                            text = data.tempMin.toString() + " min",
                             color = colorResource(id = R.color.primary_text_color),
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
@@ -173,7 +172,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                         Text(
-                            text = data.main.tempMin.toString() + " min",
+                            text = data.tempMax.toString() + " max",
                             color = colorResource(id = R.color.secondary_text_color),
                             fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
                             modifier = Modifier.fillMaxWidth(),
@@ -202,7 +201,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
                     )
                     Column {
                         Text(
-                            text = data.wind.speed.toString(),
+                            text = data.windSpeed.toString(),
                             color = colorResource(id = R.color.primary_text_color),
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
@@ -228,7 +227,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
 @Composable
 fun LocationCard(state: WeatherState) {
 
-    state.weatherResponse?.let { data ->
+    state.weatherData?.let { data ->
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -264,7 +263,7 @@ fun LocationCard(state: WeatherState) {
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                         Text(
-                            text = data.sys.country,
+                            text = data.country,
                             color = colorResource(id = R.color.secondary_text_color),
                             fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp,
                             modifier = Modifier.fillMaxWidth(),
@@ -293,7 +292,7 @@ fun LocationCard(state: WeatherState) {
                             contentScale = ContentScale.Fit
                         )
                         Text(
-                            text = getUnixTime(data.sys.sunrise),
+                            text = getUnixTime(data.sunrise),
                             color = colorResource(id = R.color.secondary_text_color),
                             fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp
                         )
@@ -309,7 +308,7 @@ fun LocationCard(state: WeatherState) {
                             contentScale = ContentScale.Fit
                         )
                         Text(
-                            text = getUnixTime(data.sys.sunset),
+                            text = getUnixTime(data.sunset),
                             color = colorResource(id = R.color.secondary_text_color),
                             fontSize = dimensionResource(id = R.dimen.value_text_size).value.sp
                         )

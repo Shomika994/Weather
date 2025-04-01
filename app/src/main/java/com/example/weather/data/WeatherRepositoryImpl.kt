@@ -1,12 +1,10 @@
 package com.example.weather.data
 
+import com.example.weather.data.mappers.toDomainWeather
 import com.example.weather.di.AppModule
-import com.example.weather.domain.util.Resource
 import com.example.weather.domain.WeatherRepository
-import com.example.weather.domain.WeatherResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.weather.domain.util.Resource
+import com.example.weather.domain.model.WeatherData
 import javax.inject.Inject
 
 
@@ -17,19 +15,19 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun fetchWeather(
         latitude: Double,
         longitude: Double,
-    ): Resource<WeatherResponse> {
-        return try {
+    ): Resource<WeatherData> {
+        return runCatching {
             Resource.Success(
                 data = weatherService.getWeather(
                     latitude,
                     longitude,
                     AppModule.METRIC_UNIT,
                     AppModule.API_ID
-                )
+                ).toDomainWeather()
             )
-        } catch (e: Exception) {
+        }.getOrElse{ e ->
             e.printStackTrace()
-            Resource.Error( e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "An unknown error occurred")
         }
     }
 }

@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.weather.di.AppModule
 import com.example.weather.domain.DataStore
-import com.example.weather.domain.WeatherResponse
+import com.example.weather.domain.model.WeatherData
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,19 +16,19 @@ val Context.dataStore by preferencesDataStore(name = AppModule.DATA_STORE)
 
 class DataStoreImpl @Inject constructor(private val context: Context) : DataStore {
 
-    private val weatherResponseKey = stringPreferencesKey("weather_response_data")
+    private val weatherDataKey = stringPreferencesKey("weather_response_data")
 
-    override suspend fun saveData(weatherResponse: WeatherResponse) {
-        val json = Gson().toJson(weatherResponse)
+    override suspend fun saveData(weatherData: WeatherData) {
+        val json = Gson().toJson(weatherData)
         context.dataStore.edit { preferences ->
-            preferences[weatherResponseKey] = json
+            preferences[weatherDataKey] = json
         }
     }
 
-    override val weatherResponseFlow: Flow<WeatherResponse?> =
+    override val weatherDataFlow: Flow<WeatherData?> =
         context.dataStore.data.map { preferences ->
-            preferences[weatherResponseKey]?.let {
-                Gson().fromJson(it, WeatherResponse::class.java)
+            preferences[weatherDataKey]?.let {
+                Gson().fromJson(it, WeatherData::class.java)
             }
         }
 
