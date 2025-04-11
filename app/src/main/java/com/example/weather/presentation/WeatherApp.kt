@@ -44,7 +44,6 @@ fun WeatherApp(
         )
     )
     val isOnline = remember { mutableStateOf(NetworkAccess.isOnline(context)) }
-    val state = rememberPullToRefreshState()
 
     LaunchedEffect(permissions.allPermissionsGranted) {
         when {
