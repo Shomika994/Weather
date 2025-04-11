@@ -15,6 +15,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -40,35 +41,36 @@ class DefaultLocationTracker @Inject constructor(
 
         return suspendCancellableCoroutine { cont ->
 
-            val locationRequest = LocationRequest.Builder(
-                Priority.PRIORITY_HIGH_ACCURACY, 1000
-            ).build()
+                val locationRequest = LocationRequest.Builder(
+                    Priority.PRIORITY_HIGH_ACCURACY, 1000
+                ).build()
 
-            val locationCallback = object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    locationResult.lastLocation?.let { location ->
-                        cont.resume(location)
-                        fusedLocationProviderClient.removeLocationUpdates(this)
+                val locationCallback = object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult) {
+                        if (cont.isActive){
+                            locationResult.lastLocation?.let { location ->
+                                cont.resume(location)
+                            } ?: cont.resume(null)
+                        }
+                    }
+                    override fun onLocationAvailability(locationAvailability: LocationAvailability) {
+                        if (!locationAvailability.isLocationAvailable) {
+                            Log.e("Location", "Location is not available")
+                        }
                     }
                 }
-                override fun onLocationAvailability(locationAvailability: LocationAvailability) {
-                    if (!locationAvailability.isLocationAvailable) {
-                        Log.e("Location", "Location is not available")
-                    }
+
+                fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest, locationCallback, Looper.getMainLooper()
+                )
+
+                cont.invokeOnCancellation {
+                    fusedLocationProviderClient.removeLocationUpdates(locationCallback)
                 }
             }
-
-            fusedLocationProviderClient.requestLocationUpdates(
-                locationRequest, locationCallback, Looper.getMainLooper()
-            )
-
-            cont.invokeOnCancellation {
-                fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-            }
-
         }
     }
-}
+
 
 
 

@@ -1,5 +1,6 @@
 package com.example.weather.presentation
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +36,6 @@ import com.example.weather.domain.util.getWeatherIcon
 
 @Composable
 fun WeatherScreen(state: WeatherState) {
-
     Column(
         modifier = Modifier
             .background(colorResource(id = R.color.main_screen_content_background_color))

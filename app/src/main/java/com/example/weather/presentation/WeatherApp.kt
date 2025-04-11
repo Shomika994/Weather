@@ -4,30 +4,32 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weather.data.NetworkAccess
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.shouldShowRationale
-import kotlinx.coroutines.launch
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -43,24 +45,29 @@ fun WeatherApp(
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
-    val hasLocationPermission = permissions.allPermissionsGranted
-    val coroutineScope = rememberCoroutineScope()
     val isOnline = remember { mutableStateOf(NetworkAccess.isOnline(context)) }
+    val state = rememberPullToRefreshState()
 
-    LaunchedEffect(hasLocationPermission) {
-        if (hasLocationPermission) {
-            viewModel.loadData()
-        } else if (permissions.permissions.any { !it.status.isGranted && it.status.shouldShowRationale }) {
-            coroutineScope.launch {
+    LaunchedEffect(permissions.allPermissionsGranted) {
+        when {
+
+            permissions.shouldShowRationale -> {
                 Toast.makeText(context, "Show rationale", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            permissions.launchMultiplePermissionRequest()
+
+            !permissions.allPermissionsGranted -> {
+                permissions.launchMultiplePermissionRequest()
+            }
+
+            else -> {
+                viewModel.loadData()
+            }
         }
+
     }
 
-    if (!isOnline.value) {
-        coroutineScope.launch {
+    LaunchedEffect(isOnline.value) {
+        if (!isOnline.value) {
             Toast.makeText(
                 context,
                 "Network not available. Please check your internet settings.",
@@ -78,13 +85,30 @@ fun WeatherApp(
             )
         )
     }, content = { innerPadding ->
-        Surface(
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (isOnline.value) {
-                WeatherScreen(viewModel.state)
+            when {
+                viewModel.state.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(
+                            Alignment.Center
+                        )
+                    )
+                }
+
+                isOnline.value -> WeatherScreen(viewModel.state)
+            }
+            viewModel.state.error?.let { error ->
+                Text(
+                    text = error,
+                    color = Color.Red,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     })
