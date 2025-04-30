@@ -23,9 +23,11 @@ class WeatherViewModel @Inject constructor(
     var state by mutableStateOf(WeatherState())
         private set
 
+
     init {
         loadSavedResponse()
     }
+
 
     fun loadData() {
         viewModelScope.launch {

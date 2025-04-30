@@ -68,7 +68,7 @@ class DefaultLocationTracker @Inject constructor(
                 }
             }
         }
-    }
+}
 
 
 

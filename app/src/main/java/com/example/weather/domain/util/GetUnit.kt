@@ -1,11 +1,14 @@
 package com.example.weather.domain.util
 
-import java.util.Locale
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 
+@Composable
 fun getUnit(): String {
-    val country = Locale.getDefault().country
-    return when (country) {
-        "US", "LR", "MM" -> "°F"
+    val currentLocale = LocalContext.current.resources.configuration.locales.get(0)
+
+    return when (currentLocale.language) {
+        "US", "LR", "MM", "BS", "BZ", "PW", "KY", "FM", "MH" -> "°F"
         else -> "°C"
     }
 }

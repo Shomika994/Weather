@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -35,9 +34,10 @@ import com.example.weather.domain.util.getWeatherIcon
 
 @Composable
 fun WeatherScreen(state: WeatherState) {
+
     Column(
         modifier = Modifier
-            .background(colorResource(id = R.color.main_screen_content_background_color))
+            .background(MaterialTheme.colorScheme.background)
             .padding(dimensionResource(id = R.dimen.main_screen_content_padding))
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -63,7 +63,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                     .weight(1f)
                     .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                 elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
             ) {
                 Row(
@@ -82,7 +82,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                     Column {
                         Text(
                             text = data.main.toString(),
-                            color = colorResource(id = R.color.primary_text_color),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                             modifier = Modifier.fillMaxWidth(),
@@ -104,7 +104,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                     .weight(1f)
                     .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                 elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
             ) {
                 Row(
@@ -119,7 +119,7 @@ fun WeatherCardsFirstRow(state: WeatherState) {
                     Column {
                         Text(
                             text = data.temperature.toString() + getUnit(),
-                            color = colorResource(id = R.color.primary_text_color),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                             modifier = Modifier.fillMaxWidth(),
@@ -150,7 +150,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
                     .weight(1f)
                     .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                 elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
             ) {
                 Row(
@@ -165,7 +165,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
                     Column {
                         Text(
                             text = data.tempMin.toString() + " min",
-                            color = colorResource(id = R.color.primary_text_color),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                             modifier = Modifier.fillMaxWidth(),
@@ -187,7 +187,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
                     .weight(1f)
                     .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                 elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
             ) {
                 Row(
@@ -202,7 +202,7 @@ fun WeatherCardsSecondRow(state: WeatherState) {
                     Column {
                         Text(
                             text = data.windSpeed.toString(),
-                            color = colorResource(id = R.color.primary_text_color),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                             modifier = Modifier.fillMaxWidth(),
@@ -233,7 +233,7 @@ fun LocationCard(state: WeatherState) {
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.card_view_marginStartEnd)),
             shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_view_corner_radius)),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
             elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_view_elevation))
         ) {
             Column(
@@ -256,7 +256,7 @@ fun LocationCard(state: WeatherState) {
                     Column {
                         Text(
                             text = data.name,
-                            color = colorResource(id = R.color.primary_text_color),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = dimensionResource(id = R.dimen.label_text_size).value.sp,
                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                             modifier = Modifier.fillMaxWidth(),

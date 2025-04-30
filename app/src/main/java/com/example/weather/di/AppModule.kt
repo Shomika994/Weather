@@ -30,7 +30,6 @@ object AppModule {
             .baseUrl(BASIC_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
     }
 
 
@@ -42,7 +41,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFusedLocation(app: Application): FusedLocationProviderClient{
+    fun provideFusedLocation(app: Application): FusedLocationProviderClient {
         return LocationServices.getFusedLocationProviderClient(app)
     }
 }
