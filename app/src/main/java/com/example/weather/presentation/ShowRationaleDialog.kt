@@ -1,4 +1,4 @@
-package com.example.weather.presentation.location
+package com.example.weather.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.material3.AlertDialog
@@ -15,12 +15,14 @@ fun ShowDialog(
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
-        modifier = Modifier.background(MaterialTheme.colorScheme.onBackground),
+        modifier = Modifier.Companion.background(MaterialTheme.colorScheme.background),
         onDismissRequest = onDismissRequest,
         title = { Text("Permission Required") },
         text = {
-            Text("It looks like you have turned off permissions required for this feature." +
-                    "It can be enabled under Application Settings")
+            Text(
+                "It looks like you have turned off permissions required for this feature." +
+                        "It can be enabled under Application Settings"
+            )
         },
         confirmButton = {
             TextButton(

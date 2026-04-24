@@ -7,7 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 fun getUnit(): String {
     val currentLocale = LocalContext.current.resources.configuration.locales.get(0)
 
-    return when (currentLocale.language) {
+    return when (currentLocale.country) {
         "US", "LR", "MM", "BS", "BZ", "PW", "KY", "FM", "MH" -> "°F"
         else -> "°C"
     }

@@ -29,6 +29,7 @@ import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,8 +43,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.weather.data.NetworkAccess
-import com.example.weather.presentation.location.ShowDialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
+import com.example.weather.data.network.NetworkAccess
+import com.example.weather.presentation.ShowDialog
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
@@ -63,8 +68,8 @@ fun WeatherApp(
         )
     )
 
-    var showRationaleDialog by remember { mutableStateOf(false) }
     val isOnline = remember { mutableStateOf(NetworkAccess.isOnline(context)) }
+    var showRationaleDialog by remember { mutableStateOf(false) }
     val coroutine = rememberCoroutineScope()
     val state = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
@@ -76,7 +81,7 @@ fun WeatherApp(
         }
     }
 
-    LaunchedEffect(isOnline.value) {
+    LaunchedEffect(true) {
         if (!isOnline.value) {
             Toast.makeText(
                 context,
@@ -86,7 +91,7 @@ fun WeatherApp(
         }
     }
 
-    LaunchedEffect(permissions.allPermissionsGranted) {
+    LaunchedEffect(permissions.allPermissionsGranted, isOnline) {
 
         when {
 

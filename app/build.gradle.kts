@@ -1,11 +1,9 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlinPluginCompose)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
-    kotlin("plugin.power-assert") version "2.0.0"
 }
 
 android {
@@ -34,31 +32,38 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-
-
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/gradle/incremental.annotation.processors"
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE.txt"
+            )
         }
-    }
-
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    powerAssert {
-        functions = listOf("kotlin.assert", "kotlin.test.assertTrue")
     }
 
     kapt {
@@ -66,8 +71,13 @@ android {
     }
 }
 
-dependencies {
+tasks.withType<Test> {
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+    }
+}
 
+dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -84,15 +94,19 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.androidx.material)
     implementation(libs.material3)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.junit)
+
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
 }

@@ -1,7 +1,7 @@
 package com.example.weather.di
 
 import android.app.Application
-import com.example.weather.data.WeatherService
+import com.example.weather.data.network.WeatherService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module

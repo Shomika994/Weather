@@ -1,13 +1,14 @@
-package com.example.weather.data
+package com.example.weather.data.dataStore
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.weather.di.AppModule
-import com.example.weather.domain.DataStore
+import com.example.weather.domain.dataStore.DataStore
 import com.example.weather.domain.model.WeatherData
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -18,19 +19,23 @@ class DataStoreImpl @Inject constructor(private val context: Context) : DataStor
 
     private val weatherDataKey = stringPreferencesKey("weather_response_data")
 
-    override suspend fun saveData(weatherData: WeatherData) {
-        val json = Gson().toJson(weatherData)
-        context.dataStore.edit { preferences ->
-            preferences[weatherDataKey] = json
+    override suspend fun saveData(weatherData: WeatherData?) {
+
+        try {
+            val json = Gson().toJson(weatherData)
+            context.dataStore.edit { preferences ->
+                preferences[weatherDataKey] = json
+            }
+        } catch (e: JsonSyntaxException) {
+            throw JsonSyntaxException(e)
         }
     }
 
-    override val weatherDataFlow: Flow<WeatherData?> =
-        context.dataStore.data.map { preferences ->
-            preferences[weatherDataKey]?.let {
-                Gson().fromJson(it, WeatherData::class.java)
-            }
+    override val weatherDataFlow: Flow<WeatherData?> = context.dataStore.data.map { preferences ->
+        preferences[weatherDataKey]?.let {
+            Gson().fromJson(it, WeatherData::class.java)
         }
+    }
 
 
 }

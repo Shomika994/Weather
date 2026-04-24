@@ -1,8 +1,8 @@
 package com.example.weather.di
 
 import android.content.Context
-import com.example.weather.data.DataStoreImpl
-import com.example.weather.domain.DataStore
+import com.example.weather.data.dataStore.DataStoreImpl
+import com.example.weather.domain.dataStore.DataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

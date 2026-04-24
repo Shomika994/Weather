@@ -1,6 +1,6 @@
 package com.example.weather.data.mappers
 
-import com.example.weather.data.WeatherResponse
+import com.example.weather.data.network.WeatherResponse
 import com.example.weather.domain.model.WeatherData
 
 fun WeatherResponse.toDomainWeather(): WeatherData {

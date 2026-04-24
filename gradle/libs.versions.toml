@@ -1,6 +1,6 @@
 [versions]
-agp = "8.7.1"
-kotlin = "1.9.0"
+agp = "8.13.2"
+kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -13,13 +13,16 @@ accompanistPermissions = "0.35.0-alpha"
 lifecycleViewmodelCompose = "2.8.2"
 mongodbDriverSync = "5.1.0"
 kmongo = "5.1.0"
-hilt = "2.49"
+hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0"
 datastorePreferences = "1.1.2"
 foundationLayoutAndroid = "1.6.7"
 converterGsonVersion = "2.11.0"
 material = "1.7.8"
 material3 = "1.3.2"
+kotlinxCoroutinesTest = "1.10.2"
+truth = "1.4.4"
+mockk = "1.14.3"
 
 
 [libraries]
@@ -48,11 +51,15 @@ androidx-foundation-layout-android = { group = "androidx.compose.foundation", na
 retrofit2-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGsonVersion" }
 androidx-material = { group = "androidx.compose.material", name = "material", version.ref = "material" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinPluginCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 
